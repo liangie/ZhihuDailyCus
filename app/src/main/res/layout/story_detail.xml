@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <WebView
+                android:id="@+id/web_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:visibility="visible"/>
+
+            <RelativeLayout
+                android:id="@+id/header_holder"
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+
+                <com.android.volley.toolbox.NetworkImageView
+                    android:id="@+id/header_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"/>
+
+                <TextView
+                    android:id="@+id/image_source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="8dp"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="12dp"/>
+
+                <TextView
+                    android:id="@+id/story_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/image_source"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="24dp"/>
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/story_detail_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="text content"
+                android:visibility="gone"/>
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>
