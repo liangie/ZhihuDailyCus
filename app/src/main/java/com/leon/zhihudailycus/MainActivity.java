@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity
 
         mListView = (ListView) findViewById(R.id.main_listview);
         mList = new ArrayList<>();
-        mAdapter = new MainListAdapter(mList, this);
+        mAdapter = new MainListAdapter(mList, this, mQueue);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
 

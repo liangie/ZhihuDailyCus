@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,8 +47,8 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
     String heander = "<html>" +
             "<head>" +
             "<meta charset=\"utf-8\">" +
-            "<link rel=\"stylesheet\" href=\""+REPLACE_CSS_FILE+"\" type=\"text/css\"/>" +
-//            "<link rel=\"stylesheet\" href=\"zh_style.css\" type=\"text/css\"/>" +
+//            "<link rel=\"stylesheet\" href=\""+REPLACE_CSS_FILE+"\" type=\"text/css\"/>" +
+            "<link rel=\"stylesheet\" href=\"zh_style.css\" type=\"text/css\"/>" +
             "</head>" +
             "<body>";
     String footer = "</body>" +
@@ -106,11 +105,11 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
                         try {
                             StoryDetailBean bean = JsonUtil.buildStoryDetail(response);
                             if (bean != null) {
-                                String cssURL = bean.getCss();
-                                cssURL = cssURL.replace("[","").replace("]","").replace("\"","");
-                                Log.d("lianglei","cssURL:"+cssURL);
-                                String cssUri = ToolUtil.getAndStoreCss(cssURL, mQueue, mContext);
-                                heander.replace(REPLACE_CSS_FILE, cssUri);
+//                                String cssURL = bean.getCss();
+//                                cssURL = cssURL.replace("[","").replace("]","").replace("\"","").replace("\\","");
+//                                String cssUri = ToolUtil.getAndStoreCss(cssURL, mQueue, mContext);
+//                                Log.d("lianglei","cssURL:"+cssURL+"; cssUri-2:"+cssUri);
+//                                heander.replace(REPLACE_CSS_FILE, cssUri);
                                 String aab = heander + bean.getBody() + footer;
                                 ToolUtil.saveStringToSD(aab, "/sdcard/test.html");
                                 webView.loadUrl("file:///storage/sdcard0/test.html");

@@ -8,7 +8,10 @@ import android.util.TypedValue;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
+import com.leon.zhihudailycus.model.BitmapLruCache;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -99,7 +102,9 @@ public class ToolUtil {
      * @return 返回目标css文件的uri值
      */
     public static String getAndStoreCss(final String url, RequestQueue Queue, final Context context) {
-        final String fileString = getCssFolder(context) + File.separator + url + ".css";
+        int offset = url.lastIndexOf("/");
+        String filename = url.substring(offset, url.length());
+        final String fileString = getCssFolder(context) + File.separator + filename + ".css";
         File file = new File(fileString);
         if (!file.exists() || !file.isFile()) {
             StringRequest stringRequest = new StringRequest(url,
@@ -121,6 +126,13 @@ public class ToolUtil {
             Queue.add(stringRequest);
         }
         return file.toURI().toString();
+    }
+
+    public static void networkImageViewUse(RequestQueue mQueue, NetworkImageView iv, String url) {
+        ImageLoader imLoader = new ImageLoader(mQueue, new BitmapLruCache());
+//        iv.setDefaultImageResId(R.drawable.about_logo);
+//        iv.setErrorImageResId(R.drawable.about_logo);
+        iv.setImageUrl(url, imLoader);
     }
 
 }

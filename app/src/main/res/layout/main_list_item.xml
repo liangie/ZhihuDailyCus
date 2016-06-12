@@ -16,6 +16,9 @@
     <com.leon.zhihudailycus.view.DailyListView
         android:id="@+id/sub_listview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"/>
 
 </LinearLayout>

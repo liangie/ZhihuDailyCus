@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
 import com.leon.zhihudailycus.R;
 import com.leon.zhihudailycus.activity.StoryDetailActivity;
 import com.leon.zhihudailycus.model.bean.DailyStoryBean;
@@ -24,10 +25,12 @@ public class MainListAdapter extends BaseAdapter {
     private List<DailyStoryBean> mList;
     private Context mContext;
     private LayoutInflater mInflater;
+    private RequestQueue mQueue;
 
-    public MainListAdapter(List<DailyStoryBean> mList, Context mContext) {
+    public MainListAdapter(List<DailyStoryBean> mList, Context mContext, RequestQueue queue) {
         this.mList = mList;
         this.mContext = mContext;
+        this.mQueue = queue;
         mInflater = LayoutInflater.from(mContext);
     }
 
@@ -57,7 +60,7 @@ public class MainListAdapter extends BaseAdapter {
         }
         ((TextView) view.findViewById(R.id.main_item_tv)).setText(bean.getData());
         DailyListView subListView = (DailyListView) view.findViewById(R.id.sub_listview);
-        DailyAdapter dailyAdapter = new DailyAdapter(bean.getCommonStories(), mContext);
+        DailyAdapter dailyAdapter = new DailyAdapter(bean.getCommonStories(), mContext, mQueue);
         subListView.setAdapter(dailyAdapter);
         subListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
