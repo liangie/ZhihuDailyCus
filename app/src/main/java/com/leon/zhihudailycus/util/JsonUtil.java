@@ -88,7 +88,6 @@ public class JsonUtil {
     "http://news-at.zhihu.com/css/news_qa.auto.css?v=4b3e3"
   ]
 }
-
 */
     public static StoryDetailBean buildStoryDetail(JSONObject jsonObject) throws Exception {
         StoryDetailBean storyBean = new StoryDetailBean();
