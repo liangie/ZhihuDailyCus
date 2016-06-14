@@ -28,8 +28,9 @@ public class JsonUtil {
         }
         JSONObject jsonObject = jsonOb;
         DailyStoryBean dailyBean = new DailyStoryBean();
-        dailyBean.setData(jsonObject.getString("date"));
+        dailyBean.setDate(jsonObject.getString("date"));
 
+        //获取stories
         JSONArray storiesArray = jsonObject.getJSONArray("stories");
         List<BaseStoryBean> commonStories = new ArrayList<>();
         for (int i = 0; i < storiesArray.length(); i++) {
@@ -45,6 +46,7 @@ public class JsonUtil {
         }
         dailyBean.setCommonStories(commonStories);
 
+        //获取topStories
         JSONArray topStoriesArray = jsonObject.getJSONArray("top_stories");
         List<BaseStoryBean> topStories = new ArrayList<>();
         for (int j = 0; j < topStoriesArray.length(); j++) {
@@ -68,6 +70,33 @@ public class JsonUtil {
     public static DailyStoryBean buildLastestStories(String jsonString) throws Exception {
         JSONObject jsonObject = new JSONObject(jsonString);
         return buildLastestStories(jsonObject);
+    }
+
+    public static DailyStoryBean buildEarlyStories(JSONObject jsonOb) throws Exception {
+        if (jsonOb == null) {
+            return null;
+        }
+        JSONObject jsonObject = jsonOb;
+        DailyStoryBean dailyBean = new DailyStoryBean();
+        dailyBean.setDate(jsonObject.getString("date"));
+
+        //获取stories
+        JSONArray storiesArray = jsonObject.getJSONArray("stories");
+        List<BaseStoryBean> commonStories = new ArrayList<>();
+        for (int i = 0; i < storiesArray.length(); i++) {
+            JSONObject object = (JSONObject) storiesArray.get(i);
+            BaseStoryBean bean = new BaseStoryBean();
+            bean.setTitle(object.getString("title"));
+            bean.setType(object.getInt("type"));
+            bean.setGa_prefix(object.getString("ga_prefix"));
+            bean.setId(object.getInt("id"));
+            bean.setImageAdd(object.getString("images"));
+//            bean.setMultipic(object.getBoolean("multipic"));
+            commonStories.add(bean);
+        }
+        dailyBean.setCommonStories(commonStories);
+
+        return dailyBean;
     }
 
     /*

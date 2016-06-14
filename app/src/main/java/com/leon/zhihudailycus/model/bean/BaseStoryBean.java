@@ -6,6 +6,7 @@ import java.io.Serializable;
  * Created by leon on 6/7/16.
  */
 public class BaseStoryBean implements Serializable {
+    private String date;
     private String imageAdd;
     private int type;
     private int id;
@@ -28,13 +29,22 @@ public class BaseStoryBean implements Serializable {
     @Override
     public String toString() {
         return "BaseStoryBean{" +
-                "imageAdd='" + imageAdd + '\'' +
+                "date='" + date + '\'' +
+                ", imageAdd='" + imageAdd + '\'' +
                 ", type=" + type +
                 ", id=" + id +
                 ", ga_prefix='" + ga_prefix + '\'' +
                 ", title='" + title + '\'' +
                 ", multipic=" + multipic +
                 '}';
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getImageAdd() {

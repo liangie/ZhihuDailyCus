@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import com.leon.zhihudailycus.model.bean.BaseStoryBean;
 import com.leon.zhihudailycus.model.bean.StoryDetailBean;
 import com.leon.zhihudailycus.util.APIUtil;
 import com.leon.zhihudailycus.util.JsonUtil;
+import com.leon.zhihudailycus.util.SharedPreferenceUtil;
 import com.leon.zhihudailycus.util.ToolUtil;
 
 import org.json.JSONObject;
@@ -37,19 +37,23 @@ import java.util.List;
  */
 public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback {
     private final int UPDATE_ITEM_VIEW = 0X10;
-    private final String REPLACE_CSS_FILE="REPLACE_CSS_FILE";
+    private final String REPLACE_CSS_FILE = "REPLACE_CSS_FILE";
     private List<BaseStoryBean> mList;
     private Context mContext;
     private LayoutInflater mInflater;
     private RequestQueue mQueue;
     private Handler mHandler;
     private String uri, uri02, uri03;
+    private WebView webView;
+    private NetworkImageView headerImg;
+    private TextView imageSource;
+    private TextView title;
     File css = new File("/sdcard/zh_style.css");
     String heander = "<html>" +
             "<head>" +
             "<meta charset=\"utf-8\">" +
-            "<link rel=\"stylesheet\" href=\""+REPLACE_CSS_FILE+"\" type=\"text/css\"/>" +
-//            "<link rel=\"stylesheet\" href=\"zh_style.css\" type=\"text/css\"/>" +
+//            "<link rel=\"stylesheet\" href=\""+REPLACE_CSS_FILE+"\" type=\"text/css\"/>" +
+            "<link rel=\"stylesheet\" href=\"zh_style.css\" type=\"text/css\"/>" +
             "</head>" +
             "<body>";
     String footer = "</body>" +
@@ -81,59 +85,49 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        BaseStoryBean bean = mList.get(position);
+        final BaseStoryBean bean = mList.get(position);
         int id = bean.getId();
         String story_uri = APIUtil.GET_STORY_DETAIL + id;
+
         View view;
         view = mInflater.inflate(R.layout.story_detail, null);
         final TextView textView = (TextView) view.findViewById(R.id.story_detail_text);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
-        final WebView webView = (WebView) view.findViewById(R.id.web_view);
-        final NetworkImageView headerImg = (NetworkImageView) view.findViewById(R.id.header_img);
-        final TextView imageSource = (TextView) view.findViewById(R.id.image_source);
-        final TextView title = (TextView) view.findViewById(R.id.story_title);
+        webView = (WebView) view.findViewById(R.id.web_view);
+        headerImg = (NetworkImageView) view.findViewById(R.id.header_img);
+        imageSource = (TextView) view.findViewById(R.id.image_source);
+        title = (TextView) view.findViewById(R.id.story_title);
         final RelativeLayout headerHolder = (RelativeLayout) view.findViewById(R.id.header_holder);
         ViewGroup.LayoutParams params = headerHolder.getLayoutParams();
         params.height = ToolUtil.dpToPx(200, mContext.getResources());
         headerHolder.setLayoutParams(params);
 //        webView.loadUrl(uri);
 //        headerHolder.setVisibility(View.GONE);
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(story_uri, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            StoryDetailBean bean = JsonUtil.buildStoryDetail(response);
-                            if (bean != null) {
-                                String cssURL = bean.getCss();
-                                cssURL = cssURL.replace("[","").replace("]","").replace("\"","");
-                                Log.d("lianglei","cssURL:"+cssURL);
-                                String cssUri = ToolUtil.getAndStoreCss(cssURL, mQueue, mContext);
-                                heander.replace(REPLACE_CSS_FILE, cssUri);
-                                String aab = heander + bean.getBody() + footer;
-                                ToolUtil.saveStringToSD(aab, "/sdcard/test.html");
-                                webView.loadUrl("file:///storage/sdcard0/test.html");
-//                                webView.loadDataWithBaseURL("file:///android_asset/", heander + bean.getBody() + footer, "text/html", "utf-8", null);
-
-                                imageSource.setText(bean.getImageSource());
-                                title.setText(bean.getTitle());
-                                networkImageViewUse(headerImg, bean.getImage());
-
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
+        String storyString = SharedPreferenceUtil.getLocalDataShared(mContext).getString("story_" + bean.getId(), "");
+        if (!"".equals(storyString)) {
+            try {
+                JSONObject response = new JSONObject(storyString);
+                useStoryJson(response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(story_uri, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            SharedPreferenceUtil.getLocalDataShared(mContext).edit().putString("story_" + bean.getId(), response.toString()).commit();
+                            useStoryJson(response);
                         }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
 
-                    }
-                });
-        mQueue.add(jsonObjectRequest);
+                        }
+                    });
+            mQueue.add(jsonObjectRequest);
+        }
         container.addView(view);
         return view;
     }
@@ -159,5 +153,30 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
 //        iv.setDefaultImageResId(R.drawable.about_logo);
 //        iv.setErrorImageResId(R.drawable.about_logo);
         iv.setImageUrl(url, imLoader);
+    }
+
+    private void useStoryJson(JSONObject response) {
+        try {
+            StoryDetailBean bean = JsonUtil.buildStoryDetail(response);
+            if (bean != null) {
+                String aab = heander + bean.getBody() + footer;
+                String filename = "/htmlfiles/" + bean.getId() + ".html";
+                File file = new File("/sdcard" + filename);
+                if (file.exists()) {
+                    webView.loadUrl("file:///storage/sdcard0" + filename);
+                } else {
+                    ToolUtil.saveStringToSD(aab, file.getAbsolutePath());
+                    webView.loadUrl("file:///storage/sdcard0" + filename);
+                }
+
+                imageSource.setText(bean.getImageSource());
+                title.setText(bean.getTitle());
+                networkImageViewUse(headerImg, bean.getImage());
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

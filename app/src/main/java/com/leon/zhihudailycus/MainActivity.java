@@ -1,5 +1,6 @@
 package com.leon.zhihudailycus;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,7 +22,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.leon.zhihudailycus.model.adapter.MainListAdapter;
+import com.leon.zhihudailycus.activity.StoryDetailActivity;
+import com.leon.zhihudailycus.model.adapter.StoryListAdapter;
+import com.leon.zhihudailycus.model.bean.BaseStoryBean;
 import com.leon.zhihudailycus.model.bean.DailyStoryBean;
 import com.leon.zhihudailycus.util.APIUtil;
 import com.leon.zhihudailycus.util.JsonUtil;
@@ -30,21 +33,28 @@ import com.leon.zhihudailycus.util.ToolUtil;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         android.os.Handler.Callback,
-        AdapterView.OnItemClickListener {
+        AdapterView.OnItemClickListener,
+        View.OnClickListener {
 
     private final int BUILD_LATEST_STORIES = 0X10;
+    private final int BUILD_EARLY_STORY_LIST = 0X11;
+
+    private String Today;
+    private String EarliestDate;
 
     private ListView mListView;
     private RequestQueue mQueue;
     private Handler mHandler = new Handler(this);
-    private MainListAdapter mAdapter;
-    private List<DailyStoryBean> mList = new ArrayList<>();
+    //    private SingleMainAdapter mAdapter;
+    private StoryListAdapter mAdapter;
+    private List<BaseStoryBean> mList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,15 +62,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity
 
         /***************/
         mQueue = Volley.newRequestQueue(this);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(APIUtil.LATEST_STORIES, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(APIUtil.LATEST_STORY_LIST, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -93,9 +94,11 @@ public class MainActivity extends AppCompatActivity
         mQueue.add(jsonObjectRequest);
 //        mQueue.start();
 
+        findViewById(R.id.load_more_ly).setOnClickListener(this);
         mListView = (ListView) findViewById(R.id.main_listview);
         mList = new ArrayList<>();
-        mAdapter = new MainListAdapter(mList, this);
+//        mAdapter = new SingleMainAdapter(mList, this);
+        mAdapter = new StoryListAdapter(mList, this, mQueue);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
 
@@ -173,13 +176,30 @@ public class MainActivity extends AppCompatActivity
                     JSONObject jsonOb = (JSONObject) msg.obj;
                     if (jsonOb != null) {
                         DailyStoryBean bean = JsonUtil.buildLastestStories(jsonOb);
+                        Today = bean.getDate();
+                        EarliestDate = bean.getDate();
                         Log.d("lianglei", "getBean:\n" + bean.toString());
-                        mList.add(bean);
+                        List<BaseStoryBean> list = bean.getCommonStories();
+                        for (BaseStoryBean b : list) {
+                            mList.add(b);
+                        }
+//                        mList.add(bean);
                         mAdapter.notifyDataSetChanged();
                     } else {
                         Log.d("lianglei", "build LastestStories failed");
                     }
-
+                    break;
+                case BUILD_EARLY_STORY_LIST:
+                    JSONObject newData = (JSONObject) msg.obj;
+                    if (newData != null) {
+                        DailyStoryBean bean = JsonUtil.buildEarlyStories(newData);
+                        List<BaseStoryBean> list = bean.getCommonStories();
+                        mList.addAll(list);
+                        mAdapter.notifyDataSetChanged();
+                        EarliestDate = ToolUtil.getYestodayString(EarliestDate);
+                    } else {
+                        Log.d("lianglei", "build earlyStoryList failed");
+                    }
                     break;
             }
         } catch (Exception e) {
@@ -190,7 +210,47 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(this, StoryDetailActivity.class);
+        intent.putExtra("commonlist", (Serializable) mList);
+        intent.putExtra("position", position);
+        startActivity(intent);
+    }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.load_more_ly:
+                getEarlyStoryList(EarliestDate);
+                break;
+        }
+    }
+
+    /**
+     * 获得指定日期的story list
+     * http://news.at.zhihu.com/api/4/news/before/20131119
+     *
+     * @param dateString
+     * @return
+     */
+    private void getEarlyStoryList(final String dateString) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(APIUtil.EARLY_STORY_LIST + dateString, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("lianglei", dateString + ":early_response:" + response);
+                        Message msg = new Message();
+                        msg.what = BUILD_EARLY_STORY_LIST;
+                        msg.obj = response;
+                        mHandler.sendMessage(msg);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("lianglei", "error:" + error);
+                    }
+                });
+        mQueue.add(jsonObjectRequest);
     }
 
     /**

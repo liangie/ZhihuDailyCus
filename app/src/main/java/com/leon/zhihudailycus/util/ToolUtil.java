@@ -8,7 +8,10 @@ import android.util.TypedValue;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
+import com.leon.zhihudailycus.model.BitmapLruCache;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -93,6 +96,7 @@ public class ToolUtil {
 
     /**
      * 获得css文件内容并存储到本地目录
+     *
      * @param url
      * @param Queue
      * @param context
@@ -121,6 +125,38 @@ public class ToolUtil {
             Queue.add(stringRequest);
         }
         return file.toURI().toString();
+    }
+
+
+    public static void useNetworkImageView(NetworkImageView iv, String url, RequestQueue queue) {
+        ImageLoader imLoader = new ImageLoader(queue, new BitmapLruCache());
+//        iv.setDefaultImageResId(R.drawable.about_logo);
+//        iv.setErrorImageResId(R.drawable.about_logo);
+        iv.setImageUrl(url, imLoader);
+    }
+
+    /**
+     * 获得传入日期String的昨天的日期String
+     *
+     * @param today 格式为8位日期String，eg:20160614
+     * @return
+     */
+    public static String getYestodayString(String today) {
+        Calendar calendar = Calendar.getInstance();
+        int year = Integer.valueOf(today.substring(0, 4));
+        int month = Integer.valueOf(today.substring(4, 6));
+        int day = Integer.valueOf(today.substring(6, 8));
+        calendar.set(year, month, day);
+        calendar.add(Calendar.DATE, -1);
+        /**
+         * month-1 的原因是在
+         * calendar.set(year, month, day)中，month是从0开始取值，所以按以上操作结果month会被+1
+         * 所以在这里month要减去1
+         */
+        calendar.add(Calendar.MONTH, -1);
+        String yestoday = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
+        Log.d("lianglei", today + "; " + year + "-" + month + "-" + day + "; yestoday:" + yestoday);
+        return yestoday;
     }
 
 }

@@ -11,8 +11,8 @@
         android:layout_height="88dp"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/story_iamge"
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/story_image"
             android:layout_width="72dp"
             android:layout_height="match_parent"
             android:layout_margin="8dp"
