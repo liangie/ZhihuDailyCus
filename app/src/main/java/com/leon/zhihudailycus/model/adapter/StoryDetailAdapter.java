@@ -1,6 +1,7 @@
 package com.leon.zhihudailycus.model.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
@@ -37,23 +38,19 @@ import java.util.List;
  */
 public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback {
     private final int UPDATE_ITEM_VIEW = 0X10;
-    private final String REPLACE_CSS_FILE = "REPLACE_CSS_FILE";
     private List<BaseStoryBean> mList;
     private Context mContext;
     private LayoutInflater mInflater;
     private RequestQueue mQueue;
-    private Handler mHandler;
-    private String uri, uri02, uri03;
     private WebView webView;
     private NetworkImageView headerImg;
     private TextView imageSource;
     private TextView title;
-    File css = new File("/sdcard/zh_style.css");
     String heander = "<html>" +
             "<head>" +
             "<meta charset=\"utf-8\">" +
 //            "<link rel=\"stylesheet\" href=\""+REPLACE_CSS_FILE+"\" type=\"text/css\"/>" +
-            "<link rel=\"stylesheet\" href=\"zh_style.css\" type=\"text/css\"/>" +
+            "<link rel=\"stylesheet\" href=\"../css_folder/zh_style.css\" type=\"text/css\"/>" +
             "</head>" +
             "<body>";
     String footer = "</body>" +
@@ -64,11 +61,6 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
         this.mContext = mContext;
         this.mQueue = queue;
         mInflater = LayoutInflater.from(mContext);
-//        File file = new File("/sdcard/zhihu_body.html");
-//        uri = "file:///storage/sdcard0/zhihu_body.html";
-//        uri02 = "file:///storage/sdcard0/zhihu_body02.html";
-//        uri03 = "file:///storage/sdcard0/zhihu_body03.html";
-        File file = new File("/sdcard/test.html");
     }
 
     @Override
@@ -100,8 +92,6 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
         ViewGroup.LayoutParams params = headerHolder.getLayoutParams();
         params.height = ToolUtil.dpToPx(200, mContext.getResources());
         headerHolder.setLayoutParams(params);
-//        webView.loadUrl(uri);
-//        headerHolder.setVisibility(View.GONE);
         String storyString = SharedPreferenceUtil.getLocalDataShared(mContext).getString("story_" + bean.getId(), "");
         if (!"".equals(storyString)) {
             try {
@@ -149,8 +139,6 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
 
     private void networkImageViewUse(NetworkImageView iv, String url) {
         ImageLoader imLoader = new ImageLoader(mQueue, new BitmapLruCache());
-//        iv.setDefaultImageResId(R.mipmap.github_icon);
-//        iv.setErrorImageResId(R.mipmap.github_icon);
         iv.setImageUrl(url, imLoader);
     }
 
@@ -159,15 +147,9 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
             StoryDetailBean bean = JsonUtil.buildStoryDetail(response);
             if (bean != null) {
                 String aab = heander + bean.getBody() + footer;
-                String filename = "/htmlfiles/" + bean.getId() + ".html";
-                File file = new File("/sdcard" + filename);
-                if (file.exists()) {
-                    webView.loadUrl("file:///storage/sdcard0" + filename);
-                } else {
-                    ToolUtil.saveStringToSD(aab, file.getAbsolutePath());
-                    webView.loadUrl("file:///storage/sdcard0" + filename);
-                }
-
+                String filename = ToolUtil.getHtmlStoryFolder(mContext) + File.separator + bean.getId() + ".html";
+                ToolUtil.saveStringToSD(aab, filename);
+                webView.loadUrl((Uri.fromFile(new File(filename))).toString());
                 imageSource.setText(bean.getImageSource());
                 title.setText(bean.getTitle());
                 networkImageViewUse(headerImg, bean.getImage());

@@ -87,8 +87,16 @@ public class ToolUtil {
     public static String getCssFolder(Context context) {
         if (context != null) {
             String path = getFilesDir(context) + ConstantUtil.CSS_FOLDER;
-            return "/sdcard/";
-//            return path;
+//            return "/sdcard/";
+            return path;
+        }
+        return null;
+    }
+
+    public static String getHtmlStoryFolder(Context context){
+        if(context!=null){
+            String path = getFilesDir(context) + ConstantUtil.HTML_STORY_FOLDER;
+            return path;
         }
         return null;
     }

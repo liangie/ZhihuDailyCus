@@ -12,4 +12,6 @@ public class ConstantUtil {
 
     //local path
     public static final String CSS_FOLDER = "/css_folder";
+    public static final String HTML_STORY_FOLDER="/html_story_folder";
+    public static final String CSS_FILE_NAME="zh_style.css";
 }

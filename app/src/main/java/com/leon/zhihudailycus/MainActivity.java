@@ -1,6 +1,7 @@
 package com.leon.zhihudailycus;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,6 +38,9 @@ import com.leon.zhihudailycus.util.ToolUtil;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -212,7 +216,6 @@ public class MainActivity extends AppCompatActivity
                         List<BaseStoryBean> list = bean.getCommonStories();
                         mList.add(new BaseStoryBean(true, bean.getDate()));
                         mList.addAll(list);
-//                        mList.add(bean);
                         mAdapter.notifyDataSetChanged();
                     } else {
                     }
@@ -339,6 +342,32 @@ public class MainActivity extends AppCompatActivity
     private void checkFolderExists() {
         //检查存储css的目录
         checkFolder(ToolUtil.getCssFolder(this));
+        checkFolder(ToolUtil.getHtmlStoryFolder(this));
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            AssetManager assetManager = getResources().getAssets();
+            inputStream = assetManager.open("zh_style.css");
+            if (inputStream != null) {
+                outputStream = new FileOutputStream(ToolUtil.getCssFolder(this) + File.separator + ConstantUtil.CSS_FILE_NAME);
+                int length = 0;
+                byte[] buf = new byte[1024];
+                while ((length = inputStream.read(buf)) > 0) {
+                    outputStream.write(buf, 0, length);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+                if (outputStream != null)
+                    outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void checkFolder(String path) {
