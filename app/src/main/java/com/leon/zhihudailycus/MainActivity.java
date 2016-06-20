@@ -10,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -232,15 +231,15 @@ public class MainActivity extends AppCompatActivity
                     mListView.removeFooterView(mFooter);
                     break;
                 case BUILD_SHARED_STORY_LIST:
-                    String jsonString = (String)msg.obj;
-                    if(jsonString!=null && jsonString.length()>0){
+                    String jsonString = (String) msg.obj;
+                    if (jsonString != null && jsonString.length() > 0) {
                         List<BaseStoryBean> list = JsonUtil.buildSharedStoryListWithJsonString(jsonString);
-                        if(list!=null && list.size()>0) {
+                        if (list != null && list.size() > 0) {
                             mList.clear();
                             mList.addAll(list);
                             mAdapter.notifyDataSetChanged();
                         }
-                    }else{
+                    } else {
                     }
 
                     break;
@@ -253,10 +252,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(this, StoryDetailActivity.class);
-        intent.putExtra("commonlist", (Serializable) mList);
-        intent.putExtra("position", position);
-        startActivity(intent);
+        if (!mList.get(position).isShowDate()) {
+            Intent intent = new Intent(this, StoryDetailActivity.class);
+            intent.putExtra("commonlist", (Serializable) mList);
+            intent.putExtra("position", position);
+            startActivity(intent);
+        }
     }
 
     @Override
