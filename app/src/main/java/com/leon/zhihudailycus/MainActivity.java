@@ -11,9 +11,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -22,12 +24,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.leon.zhihudailycus.activity.LoginActivity;
 import com.leon.zhihudailycus.activity.StoryDetailActivity;
 import com.leon.zhihudailycus.model.adapter.StoryListAdapter;
 import com.leon.zhihudailycus.model.bean.BaseStoryBean;
 import com.leon.zhihudailycus.model.bean.DailyStoryBean;
 import com.leon.zhihudailycus.util.APIUtil;
+import com.leon.zhihudailycus.util.ConstantUtil;
 import com.leon.zhihudailycus.util.JsonUtil;
+import com.leon.zhihudailycus.util.SharedPreferenceUtil;
 import com.leon.zhihudailycus.util.ToolUtil;
 
 import org.json.JSONObject;
@@ -45,6 +50,7 @@ public class MainActivity extends AppCompatActivity
 
     private final int BUILD_LATEST_STORIES = 0X10;
     private final int BUILD_EARLY_STORY_LIST = 0X11;
+    private final int BUILD_SHARED_STORY_LIST = 0X12;
 
     private String Today;
     private String EarliestDate;
@@ -55,6 +61,8 @@ public class MainActivity extends AppCompatActivity
     //    private SingleMainAdapter mAdapter;
     private StoryListAdapter mAdapter;
     private List<BaseStoryBean> mList = new ArrayList<>();
+    private View mFooter;
+    private View mHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,25 +81,10 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         /***************/
+        mFooter = LayoutInflater.from(this).inflate(R.layout.main_list_footer, null);
         mQueue = Volley.newRequestQueue(this);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(APIUtil.LATEST_STORY_LIST, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("lianglei", "response:" + response);
-                        Message msg = new Message();
-                        msg.what = BUILD_LATEST_STORIES;
-                        msg.obj = response;
-                        mHandler.sendMessage(msg);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("lianglei", "error:" + error);
-                    }
-                });
-        mQueue.add(jsonObjectRequest);
+
+        getNewestStorylist();
 //        mQueue.start();
 
         findViewById(R.id.load_more_ly).setOnClickListener(this);
@@ -101,11 +94,48 @@ public class MainActivity extends AppCompatActivity
         mAdapter = new StoryListAdapter(mList, this, mQueue);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private boolean canLoadMore = false;
+            private boolean refreshResent = true;
 
+            /**
+             * 0:IDLE
+             * 1:scroll
+             * 2:fling
+             * @param view
+             * @param scrollState
+             */
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == 0 && canLoadMore && mList.size() != 0) {
+                    if (mListView.getFooterViewsCount() == 0) {
+                        mListView.addFooterView(mFooter);
+                    }
+                    getEarlyStoryList(EarliestDate);
+                } else if (scrollState == 0 && refreshResent) {
+//                    if (mListView.getHeaderViewsCount() == 0) {
+//                        mListView.addHeaderView(mHeader);
+//                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem + visibleItemCount == totalItemCount) {
+                    canLoadMore = true;
+                } else {
+                    canLoadMore = false;
+                }
+                if (firstVisibleItem == 0) {
+                    refreshResent = true;
+                } else {
+                    refreshResent = false;
+                }
+            }
+        });
         /************** check ****************/
         checkFolderExists();
         /************** TEST ****************/
-        Log.d("lianglei", "filePath:" + ToolUtil.getFilesDir(this));
 
 
     }
@@ -136,6 +166,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -178,15 +210,12 @@ public class MainActivity extends AppCompatActivity
                         DailyStoryBean bean = JsonUtil.buildLastestStories(jsonOb);
                         Today = bean.getDate();
                         EarliestDate = bean.getDate();
-                        Log.d("lianglei", "getBean:\n" + bean.toString());
                         List<BaseStoryBean> list = bean.getCommonStories();
-                        for (BaseStoryBean b : list) {
-                            mList.add(b);
-                        }
+                        mList.add(new BaseStoryBean(true, bean.getDate()));
+                        mList.addAll(list);
 //                        mList.add(bean);
                         mAdapter.notifyDataSetChanged();
                     } else {
-                        Log.d("lianglei", "build LastestStories failed");
                     }
                     break;
                 case BUILD_EARLY_STORY_LIST:
@@ -194,12 +223,26 @@ public class MainActivity extends AppCompatActivity
                     if (newData != null) {
                         DailyStoryBean bean = JsonUtil.buildEarlyStories(newData);
                         List<BaseStoryBean> list = bean.getCommonStories();
+                        mList.add(new BaseStoryBean(true, bean.getDate()));
                         mList.addAll(list);
                         mAdapter.notifyDataSetChanged();
                         EarliestDate = ToolUtil.getYestodayString(EarliestDate);
                     } else {
-                        Log.d("lianglei", "build earlyStoryList failed");
                     }
+                    mListView.removeFooterView(mFooter);
+                    break;
+                case BUILD_SHARED_STORY_LIST:
+                    String jsonString = (String)msg.obj;
+                    if(jsonString!=null && jsonString.length()>0){
+                        List<BaseStoryBean> list = JsonUtil.buildSharedStoryListWithJsonString(jsonString);
+                        if(list!=null && list.size()>0) {
+                            mList.clear();
+                            mList.addAll(list);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    }else{
+                    }
+
                     break;
             }
         } catch (Exception e) {
@@ -226,20 +269,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * 获得指定日期的story list
-     * http://news.at.zhihu.com/api/4/news/before/20131119
-     *
-     * @param dateString
-     * @return
+     * 获得当天的最新数据
      */
-    private void getEarlyStoryList(final String dateString) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(APIUtil.EARLY_STORY_LIST + dateString, null,
+    private void getNewestStorylist() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(APIUtil.LATEST_STORY_LIST, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("lianglei", dateString + ":early_response:" + response);
                         Message msg = new Message();
-                        msg.what = BUILD_EARLY_STORY_LIST;
+                        msg.what = BUILD_LATEST_STORIES;
                         msg.obj = response;
                         mHandler.sendMessage(msg);
                     }
@@ -247,7 +285,47 @@ public class MainActivity extends AppCompatActivity
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("lianglei", "error:" + error);
+                        String storyListString = SharedPreferenceUtil.getLocalDataShared(MainActivity.this).getString(ConstantUtil.LOCAL_DATA_STORY_LIST, null);
+                        if (storyListString != null && storyListString.length() > 0) {
+                            Message msg = new Message();
+                            msg.what = BUILD_SHARED_STORY_LIST;
+                            msg.obj = storyListString;
+                            mHandler.sendMessage(msg);
+
+                        }
+                    }
+                });
+        mQueue.add(jsonObjectRequest);
+    }
+
+    private boolean loadingMore = false;
+
+    /**
+     * 获得指定日期的story list
+     * http://news.at.zhihu.com/api/4/news/before/20131119
+     *
+     * @param dateString
+     * @return
+     */
+    private synchronized void getEarlyStoryList(final String dateString) {
+        if (loadingMore)
+            return;
+        loadingMore = true;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(APIUtil.EARLY_STORY_LIST + dateString, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Message msg = new Message();
+                        msg.what = BUILD_EARLY_STORY_LIST;
+                        msg.obj = response;
+                        mHandler.sendMessage(msg);
+                        loadingMore = false;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        loadingMore = false;
                     }
                 });
         mQueue.add(jsonObjectRequest);
@@ -268,4 +346,11 @@ public class MainActivity extends AppCompatActivity
             file.mkdir();
         }
     }
+
+//
+//    _xsrf:5f9ff6db0360e12d516d73d54f96d1c3
+//    password:LIANGei_621317
+//    captcha_type:cn
+//    remember_me:true
+//    email:soul_hh@foxmail.com
 }

@@ -5,5 +5,11 @@ package com.leon.zhihudailycus.util;
  */
 public class ConstantUtil {
 
+    //sharedPreferences
+    public static final String LOCAL_DATA_SHARED_NAME = "com.leon.zhihucus.local_data_shared";
+    public static final String LOCAL_DATA_STORY_LIST="com.leon.zhihucus.local_data_story_list";
+
+
+    //local path
     public static final String CSS_FOLDER = "/css_folder";
 }

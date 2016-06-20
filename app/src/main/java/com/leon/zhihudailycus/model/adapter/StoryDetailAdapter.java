@@ -64,7 +64,6 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
         this.mContext = mContext;
         this.mQueue = queue;
         mInflater = LayoutInflater.from(mContext);
-//        Log.d("lianglei", "list-3:" + mList.toString());
 //        File file = new File("/sdcard/zhihu_body.html");
 //        uri = "file:///storage/sdcard0/zhihu_body.html";
 //        uri02 = "file:///storage/sdcard0/zhihu_body02.html";
@@ -150,8 +149,8 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
 
     private void networkImageViewUse(NetworkImageView iv, String url) {
         ImageLoader imLoader = new ImageLoader(mQueue, new BitmapLruCache());
-//        iv.setDefaultImageResId(R.drawable.about_logo);
-//        iv.setErrorImageResId(R.drawable.about_logo);
+//        iv.setDefaultImageResId(R.mipmap.github_icon);
+//        iv.setErrorImageResId(R.mipmap.github_icon);
         iv.setImageUrl(url, imLoader);
     }
 

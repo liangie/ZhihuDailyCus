@@ -19,4 +19,14 @@ public class APIUtil {
      * http://news.at.zhihu.com/api/4/news/before/20131119
      */
     public static final String EARLY_STORY_LIST = "http://news.at.zhihu.com/api/4/news/before/";
+
+    /**
+     * 用户登录
+     */
+    public static final String USER_LOGIN="http://www.zhihu.com/login/email";
+
+    /**
+     * 查看所有关注者
+     */
+    public static final String USER_FOLLOWEES = "http://www.zhihu.com/people/liang-lei-17/followees";
 }

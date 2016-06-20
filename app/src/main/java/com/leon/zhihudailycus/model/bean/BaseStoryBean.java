@@ -13,17 +13,15 @@ public class BaseStoryBean implements Serializable {
     private String ga_prefix;
     private String title;
     private boolean multipic;
+    private boolean showDate;
 
     public BaseStoryBean() {
+        this.showDate = false;
     }
 
-    public BaseStoryBean(String imageAdd, int type, int id, String ga_prefix, String title, boolean multipic) {
-        this.imageAdd = imageAdd;
-        this.type = type;
-        this.id = id;
-        this.ga_prefix = ga_prefix;
-        this.title = title;
-        this.multipic = multipic;
+    public BaseStoryBean(boolean showDate, String date) {
+        this.showDate = showDate;
+        this.date = date;
     }
 
     @Override
@@ -36,7 +34,16 @@ public class BaseStoryBean implements Serializable {
                 ", ga_prefix='" + ga_prefix + '\'' +
                 ", title='" + title + '\'' +
                 ", multipic=" + multipic +
+                ", showDate=" + showDate +
                 '}';
+    }
+
+    public boolean isShowDate() {
+        return showDate;
+    }
+
+    public void setShowDate(boolean showDate) {
+        this.showDate = showDate;
     }
 
     public String getDate() {

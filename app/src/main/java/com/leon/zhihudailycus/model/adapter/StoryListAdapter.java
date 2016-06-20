@@ -3,12 +3,17 @@ package com.leon.zhihudailycus.model.adapter;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.NetworkImageView;
 import com.leon.zhihudailycus.R;
 import com.leon.zhihudailycus.model.bean.BaseStoryBean;
+import com.leon.zhihudailycus.util.ConstantUtil;
+import com.leon.zhihudailycus.util.JsonUtil;
+import com.leon.zhihudailycus.util.SharedPreferenceUtil;
 import com.leon.zhihudailycus.util.ToolUtil;
 
 import java.util.List;
@@ -40,21 +45,44 @@ public class StoryListAdapter extends CommonBaseAdapter<StoryListAdapter.ViewHol
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         BaseStoryBean bean = mList.get(position);
-        holder.storyTitle.setText(bean.getTitle());
-        String imageAdd = bean.getImageAdd();
-        imageAdd = imageAdd.replace("[", "").replace("]", "").replace("\"", "").replace("\\", "");
-        ToolUtil.useNetworkImageView(holder.storyImg, imageAdd, mQueue);
+        if (!bean.isShowDate()) {
+            holder.tvStoryTitle.setText(bean.getTitle());
+            String imageAdd = bean.getImageAdd();
+            imageAdd = imageAdd.replace("[", "").replace("]", "").replace("\"", "").replace("\\", "");
+            ToolUtil.useNetworkImageView(holder.ivStoryImg, imageAdd, mQueue);
+
+            holder.llInfo.setVisibility(View.VISIBLE);
+            holder.rlDate.setVisibility(View.GONE);
+        } else {
+            holder.llInfo.setVisibility(View.GONE);
+            holder.rlDate.setVisibility(View.VISIBLE);
+            holder.tvDate.setText(bean.getDate());
+        }
     }
 
     public class ViewHolder extends CommonBaseAdapter.ViewHolder {
 
-        NetworkImageView storyImg;
-        TextView storyTitle;
+        NetworkImageView ivStoryImg;
+        TextView tvStoryTitle;
+        TextView tvDate;
+        LinearLayout llInfo;
+        RelativeLayout rlDate;
 
         public ViewHolder(View view) {
             super(view);
-            storyImg = (NetworkImageView) view.findViewById(R.id.story_image);
-            storyTitle = (TextView) view.findViewById(R.id.story_title);
+            ivStoryImg = (NetworkImageView) view.findViewById(R.id.story_image);
+            tvStoryTitle = (TextView) view.findViewById(R.id.story_title);
+            tvDate = (TextView) view.findViewById(R.id.date_split);
+            llInfo = (LinearLayout) view.findViewById(R.id.base_info_ly);
+            rlDate = (RelativeLayout) view.findViewById(R.id.date_ly);
         }
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        //保存当前最新的storyList到SharedPreferenced，用于在无网络连接时的展示数据
+        SharedPreferenceUtil.getLocalDataShared(mContext).edit().putString(
+                ConstantUtil.LOCAL_DATA_STORY_LIST, JsonUtil.buildJsonStringWithStoryList(mList)).commit();
     }
 }

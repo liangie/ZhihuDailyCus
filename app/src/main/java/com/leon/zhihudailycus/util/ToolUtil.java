@@ -2,7 +2,6 @@ package com.leon.zhihudailycus.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
 import android.util.TypedValue;
 
 import com.android.volley.RequestQueue;
@@ -110,7 +109,6 @@ public class ToolUtil {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.d("lianglei", "css-response:" + response);
                             if (response != null && response.length() > 0) {
                                 saveStringToSD(response, fileString);
                             }
@@ -119,7 +117,6 @@ public class ToolUtil {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.d("lianglei", "css-error:" + error.toString());
                         }
                     });
             Queue.add(stringRequest);
@@ -155,7 +152,6 @@ public class ToolUtil {
          */
         calendar.add(Calendar.MONTH, -1);
         String yestoday = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
-        Log.d("lianglei", today + "; " + year + "-" + month + "-" + day + "; yestoday:" + yestoday);
         return yestoday;
     }
 
