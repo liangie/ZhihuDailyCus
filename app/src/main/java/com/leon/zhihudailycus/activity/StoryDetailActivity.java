@@ -2,6 +2,7 @@ package com.leon.zhihudailycus.activity;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -30,7 +31,9 @@ public class StoryDetailActivity extends BaseActivity {
         setContentView(R.layout.activity_story_detail);
         mList = (List<BaseStoryBean>)getIntent().getSerializableExtra("commonlist");
         position = getIntent().getIntExtra("position",0);
-        rebuildList(mList, position);
+//        Log.d("lianglei","beforePosition:"+position);
+//        rebuildList(mList, position);
+//        Log.d("lianglei","afterPosition:"+position);
         mQueue = Volley.newRequestQueue(this);
         init();
     }
@@ -76,8 +79,10 @@ public class StoryDetailActivity extends BaseActivity {
             if(list.get(i).isShowDate()){
                 bottomDateCount++;
                 removeList.add(list.get(i));
-            }
+       }
         }
+        Log.d("lianglei","headDateCount:"+headDateCount);
+        Log.d("lianglei","removeList:"+removeList.toString());
         mList.removeAll(removeList);
         this.position -= headDateCount;
     }

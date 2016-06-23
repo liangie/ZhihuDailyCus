@@ -24,6 +24,7 @@ public class StringRequestWithCookie extends StringRequest {
 
     public void setCookie(String cookie){
         headers.put("Cookie",cookie);
+
     }
 
     @Override
