@@ -75,20 +75,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         /***************/
     }
 
-    private String cookie = "";
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_login:
-                /*
-                 _xsrf=5f9ff6db0360e12d516d73d54f96d1c3
-                 &password=LIANGei_621317
-                 &captcha_type=cn
-                 &remember_me=true
-                 &email=soul_hh%40foxmail.com
-                **/
-
                 getXSRF();
                 break;
             case R.id.bt_get_followers:
