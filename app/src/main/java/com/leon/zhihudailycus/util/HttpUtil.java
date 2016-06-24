@@ -26,10 +26,12 @@ public class HttpUtil {
             }
 
             FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
-            Iterator iterator = param.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry entry = (Map.Entry) iterator.next();
-                formEncodingBuilder.add((String)entry.getKey(),(String)entry.getValue());
+            if(param!=null && param.size()>0) {
+                Iterator iterator = param.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry entry = (Map.Entry) iterator.next();
+                    formEncodingBuilder.add((String) entry.getKey(), (String) entry.getValue());
+                }
             }
             RequestBody body = formEncodingBuilder.build();
 
