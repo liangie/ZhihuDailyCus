@@ -7,11 +7,15 @@ public class ConstantUtil {
 
     //sharedPreferences
     public static final String LOCAL_DATA_SHARED_NAME = "com.leon.zhihucus.local_data_shared";
-    public static final String LOCAL_DATA_STORY_LIST="com.leon.zhihucus.local_data_story_list";
+    public static final String LOCAL_DATA_STORY_LIST = "com.leon.zhihucus.local_data_story_list";
+    public static final String USER_ID = "com.leon.zhihucus.user_id";
+    public static final String USER_AVATAR_SRC_S = "com.leon.zhihucus.user_avatar_src_s";
+    public static final String USER_AVATAR_SRC_L = "com.leon.zhihucus.user_avatar_src_l";
+    public static final String USER_NAME = "com.leon.zhihucus.user_name";
 
 
     //local path
     public static final String CSS_FOLDER = "/css_folder";
-    public static final String HTML_STORY_FOLDER="/html_story_folder";
-    public static final String CSS_FILE_NAME="zh_style.css";
+    public static final String HTML_STORY_FOLDER = "/html_story_folder";
+    public static final String CSS_FILE_NAME = "zh_style.css";
 }

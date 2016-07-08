@@ -93,8 +93,8 @@ public class ToolUtil {
         return null;
     }
 
-    public static String getHtmlStoryFolder(Context context){
-        if(context!=null){
+    public static String getHtmlStoryFolder(Context context) {
+        if (context != null) {
             String path = getFilesDir(context) + ConstantUtil.HTML_STORY_FOLDER;
             return path;
         }
@@ -161,6 +161,11 @@ public class ToolUtil {
         calendar.add(Calendar.MONTH, -1);
         String yestoday = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
         return yestoday;
+    }
+
+    public static void networkImageViewUse(NetworkImageView iv, String url, RequestQueue mQueue) {
+        ImageLoader imLoader = new ImageLoader(mQueue, new BitmapLruCache());
+        iv.setImageUrl(url, imLoader);
     }
 
 }

@@ -16,8 +16,10 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.leon.zhihudailycus.R;
 import com.leon.zhihudailycus.util.APIUtil;
+import com.leon.zhihudailycus.util.ConstantUtil;
 import com.leon.zhihudailycus.util.HttpUtil;
 import com.leon.zhihudailycus.util.PersistentCookieStore;
+import com.leon.zhihudailycus.util.SharedPreferenceUtil;
 import com.leon.zhihudailycus.util.ToolUtil;
 import com.leon.zhihudailycus.view.BaseActivity;
 import com.squareup.okhttp.OkHttpClient;
@@ -171,6 +173,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                         JSONObject jsonOB = new JSONObject(response);
                         String msg = jsonOB.getString("msg");
                         int r = jsonOB.getInt("r");
+                        getUserBaseInfo();
                         message.obj = msg;
                     } else {
                         message.obj = "登录失败-_-";
@@ -180,6 +183,44 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
                     e.printStackTrace();
                 }
                 mHandler.sendMessage(message);
+            }
+        }).start();
+    }
+
+    /**
+     * 获得基础用户信息
+     * 包含：用户名，头像，userid（liang-lei-17）
+     */
+    private void getUserBaseInfo() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String response = HttpUtil.doGet(APIUtil.USER_SIGN_IN, client);
+                    if (response != null) {
+                        Document doc = Jsoup.parse(response);
+                        Element element = doc.select("a.zu-top-nav-userinfo").first();
+                        String userid = element.attr("href");
+                        SharedPreferenceUtil.getLocalDataShared(LoginActivity.this).edit().putString(
+                                ConstantUtil.USER_ID, userid).commit();
+                        Elements childen = element.children();
+                        Element img = childen.select("img.Avatar").first();
+                        String avatarSrc = img.attr("src");
+                        String userName = img.attr("alt");
+                        SharedPreferenceUtil.getLocalDataShared(LoginActivity.this).edit().putString(
+                                ConstantUtil.USER_AVATAR_SRC_S, avatarSrc).commit();
+                        SharedPreferenceUtil.getLocalDataShared(LoginActivity.this).edit().putString(
+                                ConstantUtil.USER_AVATAR_SRC_L, avatarSrc.replace("_s", "_l")).commit();
+                        SharedPreferenceUtil.getLocalDataShared(LoginActivity.this).edit().putString(
+                                ConstantUtil.USER_NAME, userName).commit();
+
+                        Log.d("lianglei", "name:" + userName);
+                        Log.d("lianglei", "id:" + userid);
+                        Log.d("lianglei", "src:" + avatarSrc);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }

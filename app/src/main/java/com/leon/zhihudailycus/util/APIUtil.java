@@ -29,4 +29,6 @@ public class APIUtil {
      * 查看所有关注者
      */
     public static final String USER_FOLLOWEES = "http://www.zhihu.com/people/liang-lei-17/followees";
+
+    public static final String USER_SIGN_IN = "https://www.zhihu.com/#signin";
 }

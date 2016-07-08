@@ -24,26 +24,32 @@ public class StoryDetailActivity extends BaseActivity {
     private StoryDetailAdapter mAdapter;
     private RequestQueue mQueue;
     private int position;
+//    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_detail);
-        mList = (List<BaseStoryBean>)getIntent().getSerializableExtra("commonlist");
-        position = getIntent().getIntExtra("position",0);
-//        Log.d("lianglei","beforePosition:"+position);
-//        rebuildList(mList, position);
-//        Log.d("lianglei","afterPosition:"+position);
+        mList = (List<BaseStoryBean>) getIntent().getSerializableExtra("commonlist");
+        position = getIntent().getIntExtra("position", 0);
+        try {
+            Log.d("lianglei", position + "; " + mList.get(position).getTitle());
+        }catch (Exception e){
+            Log.d("lianglei","position:"+position);
+            e.printStackTrace();
+        }
         mQueue = Volley.newRequestQueue(this);
         init();
     }
 
-    private void init(){
-        mViewPager = (ViewPager)findViewById(R.id.viewpager_detail);
-        if(mList==null){
+    private void init() {
+        mViewPager = (ViewPager) findViewById(R.id.viewpager_detail);
+//        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (mList == null) {
             mList = new ArrayList<>();
         }
-        mAdapter = new StoryDetailAdapter(this, mList,mQueue);
+//        mAdapter = new StoryDetailAdapter(this, mList, mToolbar, mQueue);
+        mAdapter = new StoryDetailAdapter(this, mList, mQueue);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(position, false);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -62,28 +68,5 @@ public class StoryDetailActivity extends BaseActivity {
 
             }
         });
-    }
-
-    private void rebuildList(List<BaseStoryBean> list, int position){
-        int headDateCount = 0;
-        int bottomDateCount = 0;
-        List<BaseStoryBean> removeList= new ArrayList<>();
-
-        for(int i =0;i<position;i++){
-            if(list.get(i).isShowDate()){
-                headDateCount++;
-                removeList.add(list.get(i));
-            }
-        }
-        for(int i=position+1;i<list.size();i++){
-            if(list.get(i).isShowDate()){
-                bottomDateCount++;
-                removeList.add(list.get(i));
-       }
-        }
-        Log.d("lianglei","headDateCount:"+headDateCount);
-        Log.d("lianglei","removeList:"+removeList.toString());
-        mList.removeAll(removeList);
-        this.position -= headDateCount;
     }
 }

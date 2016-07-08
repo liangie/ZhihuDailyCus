@@ -9,7 +9,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,6 +24,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.leon.zhihudailycus.activity.LoginActivity;
 import com.leon.zhihudailycus.activity.StoryDetailActivity;
+import com.leon.zhihudailycus.activity.UserInfoActivity;
 import com.leon.zhihudailycus.model.adapter.StoryListAdapter;
 import com.leon.zhihudailycus.model.bean.BaseStoryBean;
 import com.leon.zhihudailycus.model.bean.DailyStoryBean;
@@ -34,6 +33,8 @@ import com.leon.zhihudailycus.util.ConstantUtil;
 import com.leon.zhihudailycus.util.JsonUtil;
 import com.leon.zhihudailycus.util.SharedPreferenceUtil;
 import com.leon.zhihudailycus.util.ToolUtil;
+import com.leon.zhihudailycus.view.AutoHideToolbarListView;
+import com.leon.zhihudailycus.view.BaseActivity;
 
 import org.json.JSONObject;
 
@@ -45,7 +46,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         android.os.Handler.Callback,
         AdapterView.OnItemClickListener,
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity
     private String Today;
     private String EarliestDate;
 
-    private ListView mListView;
+    private AutoHideToolbarListView mListView;
     private RequestQueue mQueue;
     private Handler mHandler = new Handler(this);
     //    private SingleMainAdapter mAdapter;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         /***************/
+        navigationView.getHeaderView(0).findViewById(R.id.imageView).setOnClickListener(this);
         mFooter = LayoutInflater.from(this).inflate(R.layout.main_list_footer, null);
         mQueue = Volley.newRequestQueue(this);
 
@@ -91,7 +93,18 @@ public class MainActivity extends AppCompatActivity
 //        mQueue.start();
 
         findViewById(R.id.load_more_ly).setOnClickListener(this);
-        mListView = (ListView) findViewById(R.id.main_listview);
+        mListView = (AutoHideToolbarListView) findViewById(R.id.main_listview);
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
         mList = new ArrayList<>();
 //        mAdapter = new SingleMainAdapter(mList, this);
         mAdapter = new StoryListAdapter(mList, this, mQueue);
@@ -214,7 +227,9 @@ public class MainActivity extends AppCompatActivity
                         Today = bean.getDate();
                         EarliestDate = bean.getDate();
                         List<BaseStoryBean> list = bean.getCommonStories();
-                        mList.add(new BaseStoryBean(true, bean.getDate()));
+//                        mList.add(new BaseStoryBean(true, bean.getDate()));
+                        list.get(0).setShowDate(true);
+                        list.get(0).setDate(bean.getDate());
                         mList.addAll(list);
                         mAdapter.notifyDataSetChanged();
                     } else {
@@ -225,7 +240,9 @@ public class MainActivity extends AppCompatActivity
                     if (newData != null) {
                         DailyStoryBean bean = JsonUtil.buildEarlyStories(newData);
                         List<BaseStoryBean> list = bean.getCommonStories();
-                        mList.add(new BaseStoryBean(true, bean.getDate()));
+//                        mList.add(new BaseStoryBean(true, bean.getDate()));
+                        list.get(0).setShowDate(true);
+                        list.get(0).setDate(bean.getDate());
                         mList.addAll(list);
                         mAdapter.notifyDataSetChanged();
                         EarliestDate = ToolUtil.getYestodayString(EarliestDate);
@@ -255,12 +272,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (!mList.get(position).isShowDate()) {
-            Intent intent = new Intent(this, StoryDetailActivity.class);
-            intent.putExtra("commonlist", (Serializable) mList);
-            intent.putExtra("position", position);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, StoryDetailActivity.class);
+        intent.putExtra("commonlist", (Serializable) mList);
+        intent.putExtra("position", position);
+        startActivity(intent);
     }
 
     @Override
@@ -268,6 +283,12 @@ public class MainActivity extends AppCompatActivity
         switch (v.getId()) {
             case R.id.load_more_ly:
                 getEarlyStoryList(EarliestDate);
+                break;
+            case R.id.imageView:
+                Intent intent = new Intent(this, UserInfoActivity.class);
+                startActivity(intent);
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
                 break;
         }
     }
