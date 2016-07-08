@@ -6,35 +6,52 @@ import java.io.Serializable;
  * Created by leon on 6/7/16.
  */
 public class BaseStoryBean implements Serializable {
+    private String date;
     private String imageAdd;
     private int type;
     private int id;
     private String ga_prefix;
     private String title;
     private boolean multipic;
+    private boolean showDate;
 
     public BaseStoryBean() {
+        this.showDate = false;
     }
 
-    public BaseStoryBean(String imageAdd, int type, int id, String ga_prefix, String title, boolean multipic) {
-        this.imageAdd = imageAdd;
-        this.type = type;
-        this.id = id;
-        this.ga_prefix = ga_prefix;
-        this.title = title;
-        this.multipic = multipic;
+    public BaseStoryBean(boolean showDate, String date) {
+        this.showDate = showDate;
+        this.date = date;
     }
 
     @Override
     public String toString() {
         return "BaseStoryBean{" +
-                "imageAdd='" + imageAdd + '\'' +
+                "date='" + date + '\'' +
+                ", imageAdd='" + imageAdd + '\'' +
                 ", type=" + type +
                 ", id=" + id +
                 ", ga_prefix='" + ga_prefix + '\'' +
                 ", title='" + title + '\'' +
                 ", multipic=" + multipic +
+                ", showDate=" + showDate +
                 '}';
+    }
+
+    public boolean isShowDate() {
+        return showDate;
+    }
+
+    public void setShowDate(boolean showDate) {
+        this.showDate = showDate;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getImageAdd() {

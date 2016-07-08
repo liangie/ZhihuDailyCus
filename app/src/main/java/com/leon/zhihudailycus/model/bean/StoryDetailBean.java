@@ -44,7 +44,7 @@ public class StoryDetailBean {
     @Override
     public String toString() {
         return "StoryDetailBean{" +
-                ", imageSource='" + imageSource + '\'' +
+                "  imageSource='" + imageSource + '\'' +
                 ", title='" + title + '\'' +
                 ", image='" + image + '\'' +
                 ", shareUrl='" + shareUrl + '\'' +

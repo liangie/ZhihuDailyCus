@@ -2,7 +2,6 @@ package com.leon.zhihudailycus.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
 import android.util.TypedValue;
 
 import com.android.volley.RequestQueue;
@@ -88,30 +87,36 @@ public class ToolUtil {
     public static String getCssFolder(Context context) {
         if (context != null) {
             String path = getFilesDir(context) + ConstantUtil.CSS_FOLDER;
-            return "/sdcard/";
-//            return path;
+//            return "/sdcard/";
+            return path;
+        }
+        return null;
+    }
+
+    public static String getHtmlStoryFolder(Context context) {
+        if (context != null) {
+            String path = getFilesDir(context) + ConstantUtil.HTML_STORY_FOLDER;
+            return path;
         }
         return null;
     }
 
     /**
      * 获得css文件内容并存储到本地目录
+     *
      * @param url
      * @param Queue
      * @param context
      * @return 返回目标css文件的uri值
      */
     public static String getAndStoreCss(final String url, RequestQueue Queue, final Context context) {
-        int offset = url.lastIndexOf("/");
-        String filename = url.substring(offset, url.length());
-        final String fileString = getCssFolder(context) + File.separator + filename + ".css";
+        final String fileString = getCssFolder(context) + File.separator + url + ".css";
         File file = new File(fileString);
         if (!file.exists() || !file.isFile()) {
             StringRequest stringRequest = new StringRequest(url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.d("lianglei", "css-response:" + response);
                             if (response != null && response.length() > 0) {
                                 saveStringToSD(response, fileString);
                             }
@@ -120,7 +125,6 @@ public class ToolUtil {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.d("lianglei", "css-error:" + error.toString());
                         }
                     });
             Queue.add(stringRequest);
@@ -128,10 +132,39 @@ public class ToolUtil {
         return file.toURI().toString();
     }
 
-    public static void networkImageViewUse(RequestQueue mQueue, NetworkImageView iv, String url) {
-        ImageLoader imLoader = new ImageLoader(mQueue, new BitmapLruCache());
+
+    public static void useNetworkImageView(NetworkImageView iv, String url, RequestQueue queue) {
+        ImageLoader imLoader = new ImageLoader(queue, new BitmapLruCache());
 //        iv.setDefaultImageResId(R.drawable.about_logo);
 //        iv.setErrorImageResId(R.drawable.about_logo);
+        iv.setImageUrl(url, imLoader);
+    }
+
+    /**
+     * 获得传入日期String的昨天的日期String
+     *
+     * @param today 格式为8位日期String，eg:20160614
+     * @return
+     */
+    public static String getYestodayString(String today) {
+        Calendar calendar = Calendar.getInstance();
+        int year = Integer.valueOf(today.substring(0, 4));
+        int month = Integer.valueOf(today.substring(4, 6));
+        int day = Integer.valueOf(today.substring(6, 8));
+        calendar.set(year, month, day);
+        calendar.add(Calendar.DATE, -1);
+        /**
+         * month-1 的原因是在
+         * calendar.set(year, month, day)中，month是从0开始取值，所以按以上操作结果month会被+1
+         * 所以在这里month要减去1
+         */
+        calendar.add(Calendar.MONTH, -1);
+        String yestoday = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
+        return yestoday;
+    }
+
+    public static void networkImageViewUse(NetworkImageView iv, String url, RequestQueue mQueue) {
+        ImageLoader imLoader = new ImageLoader(mQueue, new BitmapLruCache());
         iv.setImageUrl(url, imLoader);
     }
 

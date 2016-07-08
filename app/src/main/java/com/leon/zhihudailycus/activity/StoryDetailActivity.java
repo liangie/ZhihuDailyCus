@@ -2,6 +2,7 @@ package com.leon.zhihudailycus.activity;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -23,24 +24,49 @@ public class StoryDetailActivity extends BaseActivity {
     private StoryDetailAdapter mAdapter;
     private RequestQueue mQueue;
     private int position;
+//    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_detail);
-        mList = (List<BaseStoryBean>)getIntent().getSerializableExtra("commonlist");
-        position = getIntent().getIntExtra("position",0);
+        mList = (List<BaseStoryBean>) getIntent().getSerializableExtra("commonlist");
+        position = getIntent().getIntExtra("position", 0);
+        try {
+            Log.d("lianglei", position + "; " + mList.get(position).getTitle());
+        }catch (Exception e){
+            Log.d("lianglei","position:"+position);
+            e.printStackTrace();
+        }
         mQueue = Volley.newRequestQueue(this);
         init();
     }
 
-    private void init(){
-        mViewPager = (ViewPager)findViewById(R.id.viewpager_detail);
-        if(mList==null){
+    private void init() {
+        mViewPager = (ViewPager) findViewById(R.id.viewpager_detail);
+//        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (mList == null) {
             mList = new ArrayList<>();
         }
-        mAdapter = new StoryDetailAdapter(this, mList,mQueue);
+//        mAdapter = new StoryDetailAdapter(this, mList, mToolbar, mQueue);
+        mAdapter = new StoryDetailAdapter(this, mList, mQueue);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setCurrentItem(position, false);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 }

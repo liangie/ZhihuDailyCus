@@ -58,7 +58,7 @@ public class MainListAdapter extends BaseAdapter {
         if (view == null) {
             view = mInflater.inflate(R.layout.main_list_item, null);
         }
-        ((TextView) view.findViewById(R.id.main_item_tv)).setText(bean.getData());
+        ((TextView) view.findViewById(R.id.main_item_tv)).setText(bean.getDate());
         DailyListView subListView = (DailyListView) view.findViewById(R.id.sub_listview);
         DailyAdapter dailyAdapter = new DailyAdapter(bean.getCommonStories(), mContext, mQueue);
         subListView.setAdapter(dailyAdapter);

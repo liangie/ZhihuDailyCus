@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#fafafa"
+              android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="?attr/colorPrimary"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+
+                <EditText
+                    android:id="@+id/et_login_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="邮箱或手机号"/>
+
+
+                <EditText
+                    android:id="@+id/et_login_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="密码"/>
+
+                <Button
+                    android:id="@+id/bt_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/round_rect_back"
+                    android:text="login"
+                    android:textColor="@android:color/white"/>
+
+                <RelativeLayout
+                    android:id="@+id/remember_me_ly"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp">
+
+                    <CheckBox
+                        android:id="@+id/cb_remember_me"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:checked="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_toRightOf="@id/cb_remember_me"
+                        android:gravity="center_vertical"
+                        android:text="记住密码"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center_vertical"
+                        android:text="无法登录?"/>
+                </RelativeLayout>
+
+
+                <Button
+                    android:id="@+id/bt_get_followers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:background="@color/colorTheme"
+                    android:text="get followers"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:orientation="horizontal">
+
+                <com.android.volley.toolbox.NetworkImageView
+                    android:id="@+id/image_test"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:background="@android:color/white"/>
+
+
+                <WebView
+                    android:id="@+id/wv_captcha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="12dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
