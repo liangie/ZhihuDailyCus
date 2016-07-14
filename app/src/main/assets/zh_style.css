@@ -360,7 +360,8 @@ ol {
   margin-right: 0;
 }
 .headline .img-place-holder {
-  height: 200px;
+  #head 图片的高度
+  height: 0px;
 }
 .from-column {
   width: 280px;

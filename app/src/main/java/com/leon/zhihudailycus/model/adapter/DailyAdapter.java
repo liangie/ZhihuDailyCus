@@ -63,8 +63,8 @@ public class DailyAdapter extends BaseAdapter implements Handler.Callback {
         /******* imageRequest *********/
         String add = bean.getImageAdd().replace("[","").replace("]","").replace("\"","").replace("\\","");
         Log.d("lianglei","imageAdd:"+add);
-        NetworkImageView imageView = (NetworkImageView)view.findViewById(R.id.story_iamge);
-        ToolUtil.networkImageViewUse(mQueue, imageView, add);
+        NetworkImageView imageView = (NetworkImageView)view.findViewById(R.id.story_image);
+        ToolUtil.networkImageViewUse(imageView, add, mQueue);
 
         return view;
     }

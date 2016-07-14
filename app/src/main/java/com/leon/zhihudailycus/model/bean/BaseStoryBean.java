@@ -6,12 +6,12 @@ import java.io.Serializable;
  * Created by leon on 6/7/16.
  */
 public class BaseStoryBean implements Serializable {
-    private String date;
-    private String imageAdd;
+    private String date="";
+    private String imageAdd="";
     private int type;
     private int id;
-    private String ga_prefix;
-    private String title;
+    private String ga_prefix="";
+    private String title="";
     private boolean multipic;
     private boolean showDate;
 
