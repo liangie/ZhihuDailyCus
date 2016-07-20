@@ -74,21 +74,6 @@
         </RelativeLayout>
     </com.leon.zhihudailycus.view.CusScrollView>
 
-
-    <LinearLayout
-        android:id="@+id/loading_ly"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/whiteSmoke"
-        android:orientation="vertical"
-        android:gravity="center">
-        <ProgressBar
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:progressBackgroundTint="@android:color/holo_red_dark"/>
-    </LinearLayout>
-
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

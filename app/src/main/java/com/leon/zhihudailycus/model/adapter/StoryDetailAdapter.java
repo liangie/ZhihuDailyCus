@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -218,7 +219,11 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
             for (int i = 0; i < curr.getChildCount(); i++) {
                 View view = curr.getChildAt(i);
                 if (view instanceof CusScrollView) {
-                    ((CusScrollView) view).smoothScrollTo(0, 0);
+                    int offset = ((CusScrollView) view).getVerticalScrollOffset();
+                    if (offset != 0) {
+                        Log.d("lianglei", "offset:" + offset);
+                        ((CusScrollView) view).smoothScrollTo(0, 0);
+                    }
                     break;
                 }
             }

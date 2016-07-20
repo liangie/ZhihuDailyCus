@@ -44,4 +44,8 @@ public class CusScrollView extends ScrollView {
 
         void setAttrs(int L, int T, int oldL, int oldT);
     }
+
+    public int getVerticalScrollOffset(){
+        return computeVerticalScrollOffset();
+    }
 }
