@@ -101,7 +101,6 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
         final CusScrollView mScrollView = (CusScrollView) view.findViewById(R.id.sv_story);
         final TextView title = (TextView) view.findViewById(R.id.story_title);
         final RelativeLayout headerHolder = (RelativeLayout) view.findViewById(R.id.header_holder);
-        final LinearLayout loadingView = (LinearLayout) view.findViewById(R.id.loading_ly);
 
         ViewGroup.LayoutParams params = headerHolder.getLayoutParams();
         params.height = ToolUtil.dpToPx(200, mContext.getResources());
