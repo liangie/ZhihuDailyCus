@@ -3,7 +3,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-
     <RelativeLayout
         android:id="@+id/header_holder"
         android:layout_width="match_parent"
@@ -64,7 +63,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/transparent"/>
 
-            <WebView
+            <com.leon.zhihudailycus.view.CusWebView
                 android:id="@+id/web_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -72,15 +71,23 @@
                 android:background="@android:color/transparent"
                 android:visibility="visible"/>
 
-
-            <!--<TextView-->
-            <!--android:id="@+id/story_detail_text"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:text="text content"-->
-            <!--android:visibility="gone"/>-->
         </RelativeLayout>
     </com.leon.zhihudailycus.view.CusScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/loading_ly"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/whiteSmoke"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:progressBackgroundTint="@android:color/holo_red_dark"/>
+    </LinearLayout>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

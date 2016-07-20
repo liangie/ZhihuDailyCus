@@ -6,4 +6,5 @@
 
     <!-- ******************* -->
     <color name="colorTheme">#6495ed</color>
+    <color name="whiteSmoke">#FAFAFA</color>
 </resources>

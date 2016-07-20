@@ -152,7 +152,7 @@ public class MainActivity extends BaseActivity
         /************** check ****************/
         checkFolderExists();
         /************** TEST ****************/
-
+//        test();
 
     }
 
@@ -397,6 +397,40 @@ public class MainActivity extends BaseActivity
             file.mkdir();
         }
     }
+
+    /*private void test() {
+        Log.d("lianglei","Rxjava test()");
+        Observer<String> observer = new Observer<String>() {
+            @Override
+            public void onCompleted() {
+                Log.d("lianglei", "onCompleted");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d("lianglei", "onError");
+            }
+
+            @Override
+            public void onNext(String s) {
+                Log.d("lianglei", "onNext");
+            }
+        };
+
+        rx.Observable observable = rx.Observable.create(new rx.Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                subscriber.onNext("step one");
+                subscriber.onNext("step two");
+                subscriber.onNext("step three");
+                subscriber.onCompleted();
+            }
+        });
+
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }*/
 
 //
 //    _xsrf:5f9ff6db0360e12d516d73d54f96d1c3

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import com.leon.zhihudailycus.util.JsonUtil;
 import com.leon.zhihudailycus.util.SharedPreferenceUtil;
 import com.leon.zhihudailycus.util.ToolUtil;
 import com.leon.zhihudailycus.view.CusScrollView;
+import com.leon.zhihudailycus.view.CusWebView;
 
 import org.json.JSONObject;
 
@@ -42,14 +44,8 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
     private Context mContext;
     private LayoutInflater mInflater;
     private RequestQueue mQueue;
-    //    private WebView webView;
-//    private NetworkImageView headerImg;
-//    private TextView imageSource;
-//    private TextView title;
-//    private CusScrollView mScrollView;
-//    private Toolbar mToolbar;
+    private Handler mHandler;
     private int lastY = 0;
-    /*lastTranslationY>=0 && lastTranslationY<=mToolbar.getHeight()*/
     private int lastTranslationY;
     private int toolbarH = -1;
     String heander = "<html>" +
@@ -98,12 +94,14 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
 //        final TextView detailText = (TextView) view.findViewById(R.id.story_detail_text);
 //        detailText.setMovementMethod(LinkMovementMethod.getInstance());
         final Toolbar mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        final WebView webView = (WebView) view.findViewById(R.id.web_view);
+        final CusWebView webView = (CusWebView) view.findViewById(R.id.web_view);
         final NetworkImageView headerImg = (NetworkImageView) view.findViewById(R.id.header_img);
         final TextView imageSource = (TextView) view.findViewById(R.id.image_source);
         final CusScrollView mScrollView = (CusScrollView) view.findViewById(R.id.sv_story);
         final TextView title = (TextView) view.findViewById(R.id.story_title);
         final RelativeLayout headerHolder = (RelativeLayout) view.findViewById(R.id.header_holder);
+        final LinearLayout loadingView = (LinearLayout) view.findViewById(R.id.loading_ly);
+
         ViewGroup.LayoutParams params = headerHolder.getLayoutParams();
         params.height = ToolUtil.dpToPx(200, mContext.getResources());
         headerHolder.setLayoutParams(params);
@@ -173,6 +171,7 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
         blocker.setLayoutParams(blockParams);
 
         container.addView(view);
+
         return view;
     }
 
@@ -215,6 +214,7 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
         super.finishUpdate(container);
         for (int j = 0; j < container.getChildCount(); j++) {
             ViewGroup curr = (ViewGroup) container.getChildAt(j);
+//            ViewGroup curr = (ViewGroup) container.getChildAt(container.getChildCount());
             for (int i = 0; i < curr.getChildCount(); i++) {
                 View view = curr.getChildAt(i);
                 if (view instanceof CusScrollView) {
