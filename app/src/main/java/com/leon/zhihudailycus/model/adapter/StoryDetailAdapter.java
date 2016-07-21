@@ -6,13 +6,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -220,7 +218,7 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
                 if (view instanceof CusScrollView) {
                     int offset = ((CusScrollView) view).getVerticalScrollOffset();
                     if (offset != 0) {
-                        Log.d("lianglei", "offset:" + offset);
+                        //这个判断条件可以极大减少smoothScrollTo的执行次数，
                         ((CusScrollView) view).smoothScrollTo(0, 0);
                     }
                     break;

@@ -49,7 +49,6 @@ public class StoryListAdapter extends CommonBaseAdapter<StoryListAdapter.ViewHol
         String imageAdd = bean.getImageAdd();
         imageAdd = imageAdd.replace("[", "").replace("]", "").replace("\"", "").replace("\\", "");
         ToolUtil.useNetworkImageView(holder.ivStoryImg, imageAdd, mQueue);
-        holder.tvPosition.setText(mContext.getString(R.string.story_position,position));
 
         if (bean.isShowDate()) {
             holder.tvDate.setText(bean.getDate());
@@ -66,7 +65,6 @@ public class StoryListAdapter extends CommonBaseAdapter<StoryListAdapter.ViewHol
         TextView tvDate;
         LinearLayout llInfo;
         RelativeLayout rlDate;
-        TextView tvPosition;
 
         public ViewHolder(View view) {
             super(view);
@@ -75,7 +73,6 @@ public class StoryListAdapter extends CommonBaseAdapter<StoryListAdapter.ViewHol
             tvDate = (TextView) view.findViewById(R.id.date_split);
             llInfo = (LinearLayout) view.findViewById(R.id.base_info_ly);
             rlDate = (RelativeLayout) view.findViewById(R.id.date_ly);
-            tvPosition=(TextView)view.findViewById(R.id.story_posi);
         }
     }
 
