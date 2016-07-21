@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -218,7 +219,10 @@ public class StoryDetailAdapter extends PagerAdapter implements Handler.Callback
                 if (view instanceof CusScrollView) {
                     int offset = ((CusScrollView) view).getVerticalScrollOffset();
                     if (offset != 0) {
-                        //这个判断条件可以极大减少smoothScrollTo的执行次数，
+                        //切换pager后，当切换后的scrollVie没有滑动到顶部时（因为使用webView加载html的关系，导致加载数据过程中有多次高度计算，
+                        //导致webView滑动到scrollView顶部的现象，暂时没找到解决办法，只能用现在的方式弥补），则手动执行滑动到顶部的操作。
+                        //这个判断条件可以极大减少smoothScrollTo的执行次数
+                        Log.d("lianglei", "doSmoothScrollTo()");
                         ((CusScrollView) view).smoothScrollTo(0, 0);
                     }
                     break;
