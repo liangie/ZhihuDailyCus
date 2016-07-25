@@ -10,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +37,7 @@ import com.leon.zhihudailycus.util.ToolUtil;
 import com.leon.zhihudailycus.view.AutoHideToolbarListView;
 import com.leon.zhihudailycus.view.BaseActivity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -89,6 +91,7 @@ public class MainActivity extends BaseActivity
         mFooter = LayoutInflater.from(this).inflate(R.layout.main_list_footer, null);
         mQueue = Volley.newRequestQueue(this);
 
+        getSharedNewestStoryList();
         getNewestStorylist();
 //        mQueue.start();
 
@@ -246,14 +249,14 @@ public class MainActivity extends BaseActivity
                         mList.addAll(list);
                         mAdapter.notifyDataSetChanged();
                         EarliestDate = ToolUtil.getYestodayString(EarliestDate);
-                    } else {
+
                     }
                     mListView.removeFooterView(mFooter);
                     break;
                 case BUILD_SHARED_STORY_LIST:
-                    String jsonString = (String) msg.obj;
-                    if (jsonString != null && jsonString.length() > 0) {
-                        List<BaseStoryBean> list = JsonUtil.buildSharedStoryListWithJsonString(jsonString);
+                    JSONObject json = (JSONObject) msg.obj;
+                    if (json != null ) {
+                        List<BaseStoryBean> list = JsonUtil.buildSharedStoryList(json);
                         if (list != null && list.size() > 0) {
                             mList.clear();
                             mList.addAll(list);
@@ -293,6 +296,23 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    private void getSharedNewestStoryList() {
+        String shared = SharedPreferenceUtil.getLocalDataShared(this).getString(ConstantUtil.SHARED_TODAY_LASTEST_STORIES, "");
+        Log.d("lianglei", "getSharedNewestStoryList()"+shared);
+        if (shared == null || "".equals(shared)) {
+            return;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(shared);
+            Message msg = new Message();
+            msg.what = BUILD_SHARED_STORY_LIST;
+            msg.obj = jsonObject;
+            mHandler.sendMessage(msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 获得当天的最新数据
      */
@@ -310,14 +330,14 @@ public class MainActivity extends BaseActivity
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        String storyListString = SharedPreferenceUtil.getLocalDataShared(MainActivity.this).getString(ConstantUtil.LOCAL_DATA_STORY_LIST, null);
-                        if (storyListString != null && storyListString.length() > 0) {
-                            Message msg = new Message();
-                            msg.what = BUILD_SHARED_STORY_LIST;
-                            msg.obj = storyListString;
-                            mHandler.sendMessage(msg);
-
-                        }
+//                        String storyListString = SharedPreferenceUtil.getLocalDataShared(MainActivity.this).getString(ConstantUtil.SHARED_TODAY_LASTEST_STORIES, null);
+//                        if (storyListString != null && storyListString.length() > 0) {
+//                            Message msg = new Message();
+//                            msg.what = BUILD_SHARED_STORY_LIST;
+//                            msg.obj = storyListString;
+//                            mHandler.sendMessage(msg);
+//
+//                        }
                     }
                 });
         mQueue.add(jsonObjectRequest);

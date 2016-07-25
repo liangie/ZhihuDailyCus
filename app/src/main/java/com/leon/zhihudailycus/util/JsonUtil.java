@@ -17,6 +17,9 @@ public class JsonUtil {
 
     /**
      * 构建每日日报的数据bean
+     * 获取当天最新的当天日报数据
+     * CommonStories 表示当天所有日报
+     * topStories 表示当天的推荐日报，及viewpager中显示的数据
      *
      * @param jsonOb
      * @return
@@ -72,6 +75,13 @@ public class JsonUtil {
         return buildLastestStories(jsonObject);
     }
 
+    /**
+     * 解析指定日期中的stories
+     *
+     * @param jsonOb 查询指定日期返回的json对象
+     * @return
+     * @throws Exception
+     */
     public static DailyStoryBean buildEarlyStories(JSONObject jsonOb) throws Exception {
         if (jsonOb == null) {
             return null;
@@ -112,16 +122,16 @@ public class JsonUtil {
         try {
             for (BaseStoryBean bean : list) {
                 JSONObject obj = new JSONObject();
-                if(!bean.isShowDate()) {
-                    obj.put("title", bean.getTitle());
-                    obj.put("type", bean.getType());
-                    obj.put("ga_prefix", bean.getGa_prefix());
-                    obj.put("id", bean.getId());
-                    obj.put("images", bean.getImageAdd());
-                    obj.put("showDate",false);
-                }else{
+                obj.put("title", bean.getTitle());
+                obj.put("type", bean.getType());
+                obj.put("ga_prefix", bean.getGa_prefix());
+                obj.put("id", bean.getId());
+                obj.put("images", bean.getImageAdd());
+                if (!bean.isShowDate()) {
+                    obj.put("showDate", false);
+                } else {
                     obj.put("date", bean.getDate());
-                    obj.put("showDate",true);
+                    obj.put("showDate", true);
                 }
                 stories.put(obj);
             }
@@ -133,35 +143,26 @@ public class JsonUtil {
         return jsonObject.toString();
     }
 
-    /**
-     * 用存储在sharedPreferenced中的jsonString来构建StoryList
-     *
-     * @param jsonString
-     * @return
-     */
-    public static List<BaseStoryBean> buildSharedStoryListWithJsonString(String jsonString) {
-        JSONObject jsonObject = null;
+    public static List<BaseStoryBean> buildSharedStoryList(JSONObject jsonObject) {
         List<BaseStoryBean> list = new ArrayList<>();
         try {
-            jsonObject = new JSONObject(jsonString);
             if (jsonObject == null) {
                 return null;
             }
-
             //获取stories
             JSONArray storiesArray = jsonObject.getJSONArray("stories");
 //            List<BaseStoryBean> commonStories = new ArrayList<>();
             for (int i = 0; i < storiesArray.length(); i++) {
                 JSONObject object = (JSONObject) storiesArray.get(i);
                 BaseStoryBean bean = new BaseStoryBean();
-                if(!object.getBoolean("showDate")) {
-                    bean.setTitle(object.getString("title"));
-                    bean.setType(object.getInt("type"));
-                    bean.setGa_prefix(object.getString("ga_prefix"));
-                    bean.setId(object.getInt("id"));
-                    bean.setImageAdd(object.getString("images"));
+                bean.setTitle(object.getString("title"));
+                bean.setType(object.getInt("type"));
+                bean.setGa_prefix(object.getString("ga_prefix"));
+                bean.setId(object.getInt("id"));
+                bean.setImageAdd(object.getString("images"));
+                if (!object.getBoolean("showDate")) {
                     bean.setShowDate(false);
-                }else{
+                } else {
                     bean.setShowDate(true);
                     bean.setDate(object.getString("date"));
                 }
@@ -174,6 +175,22 @@ public class JsonUtil {
             return null;
         }
 
+    }
+
+    /**
+     * 用存储在sharedPreferenced中的jsonString来构建StoryList
+     *
+     * @param jsonString
+     * @return
+     */
+    public static List<BaseStoryBean> buildSharedStoryListWithJsonString(String jsonString) {
+        try {
+            JSONObject json = new JSONObject(jsonString);
+            return buildSharedStoryList(json);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /*

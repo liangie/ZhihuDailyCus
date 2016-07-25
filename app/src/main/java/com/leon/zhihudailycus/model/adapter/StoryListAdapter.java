@@ -81,6 +81,6 @@ public class StoryListAdapter extends CommonBaseAdapter<StoryListAdapter.ViewHol
         super.notifyDataSetChanged();
         //保存当前最新的storyList到SharedPreferenced，用于在无网络连接时的展示数据
         SharedPreferenceUtil.getLocalDataShared(mContext).edit().putString(
-                ConstantUtil.LOCAL_DATA_STORY_LIST, JsonUtil.buildJsonStringWithStoryList(mList)).commit();
+                ConstantUtil.SHARED_TODAY_LASTEST_STORIES, JsonUtil.buildJsonStringWithStoryList(mList)).commit();
     }
 }
