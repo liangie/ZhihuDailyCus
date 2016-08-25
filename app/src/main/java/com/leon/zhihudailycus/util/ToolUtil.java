@@ -2,6 +2,7 @@ package com.leon.zhihudailycus.util;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.util.TypedValue;
 
 import com.android.volley.RequestQueue;
@@ -12,8 +13,18 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.leon.zhihudailycus.model.BitmapLruCache;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -167,5 +178,70 @@ public class ToolUtil {
         ImageLoader imLoader = new ImageLoader(mQueue, new BitmapLruCache());
         iv.setImageUrl(url, imLoader);
     }
+
+    public static boolean saveBitmapAsFile(Bitmap bitmap, String path) {
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(path, false));
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    /**
+     * 将网络图片的二进制流
+     *
+     * @param imgUrl : 图片地址
+     * @return
+     * @throws IOException
+     */
+    public static byte[] getFileByte(String imgUrl) throws IOException {
+        // 请求服务器
+        URL postUrl = new URL(imgUrl);
+        HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5 * 1000);
+        InputStream inputStream = connection.getInputStream();
+        byte[] buffer = new byte[1024];
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        inputStream.close();
+        byte[] data = outStream.toByteArray();
+
+        return data;
+    }
+
+    public static JSONObject getJsonObject(String url) throws IOException, JSONException {
+        JSONObject jsonObject = null;
+        URL getUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) getUrl.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(5 * 1000);
+        InputStream inputStream = connection.getInputStream();
+        byte[] buffer = new byte[1024];
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        int len = 0;
+        StringBuffer jsonString = new StringBuffer();
+        while ((len = inputStream.read(buffer)) != -1) {
+            jsonString.append(len);
+        }
+
+        if (jsonString != null && jsonString.length() > 0) {
+            jsonObject = new JSONObject(jsonString.toString());
+        }
+        return jsonObject;
+    }
+
 
 }

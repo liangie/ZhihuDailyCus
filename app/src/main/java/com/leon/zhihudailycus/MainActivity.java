@@ -225,6 +225,7 @@ public class MainActivity extends BaseActivity
             switch (msg.what) {
                 case BUILD_LATEST_STORIES:
                     JSONObject jsonOb = (JSONObject) msg.obj;
+                    Log.d("lianglei","buildLatestStories-"+(jsonOb==null));
                     if (jsonOb != null) {
                         DailyStoryBean bean = JsonUtil.buildLastestStories(jsonOb);
                         Today = bean.getDate();
@@ -255,7 +256,8 @@ public class MainActivity extends BaseActivity
                     break;
                 case BUILD_SHARED_STORY_LIST:
                     JSONObject json = (JSONObject) msg.obj;
-                    if (json != null ) {
+                    Log.d("lianglei","buildSharedStoryList-"+(json==null));
+                    if (json != null && mList != null && mList.size() > 0) {
                         List<BaseStoryBean> list = JsonUtil.buildSharedStoryList(json);
                         if (list != null && list.size() > 0) {
                             mList.clear();
@@ -298,7 +300,7 @@ public class MainActivity extends BaseActivity
 
     private void getSharedNewestStoryList() {
         String shared = SharedPreferenceUtil.getLocalDataShared(this).getString(ConstantUtil.SHARED_TODAY_LASTEST_STORIES, "");
-        Log.d("lianglei", "getSharedNewestStoryList()"+shared);
+        Log.d("lianglei", "getSharedNewestStoryList()" + shared);
         if (shared == null || "".equals(shared)) {
             return;
         }

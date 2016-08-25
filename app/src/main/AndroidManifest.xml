@@ -35,6 +35,15 @@
             android:name=".activity.UserInfoActivity"
             android:screenOrientation="portrait"/>
 
+        <service android:name=".service.RemoteService"
+                 android:process=":remote"/>
+
+
+        <receiver android:name=".broadcast.UserPresentReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

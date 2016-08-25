@@ -31,4 +31,13 @@ public class APIUtil {
     public static final String USER_FOLLOWEES = "http://www.zhihu.com/people/liang-lei-17/followees";
 
     public static final String USER_SIGN_IN = "https://www.zhihu.com/#signin";
+
+
+    /**
+     * 启动页面的背景图片
+     */
+    public static final String START_IMAGE_320="http://news-at.zhihu.com/api/4/start-image/320*432";
+    public static final String START_IMAGE_480="http://news-at.zhihu.com/api/4/start-image/480*728";
+    public static final String START_IMAGE_720="http://news-at.zhihu.com/api/4/start-image/720*1184";
+    public static final String START_IMAGE_1080="http://news-at.zhihu.com/api/4/start-image/1080*1776";
 }

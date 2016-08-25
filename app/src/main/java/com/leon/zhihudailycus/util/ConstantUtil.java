@@ -12,6 +12,7 @@ public class ConstantUtil {
     public static final String USER_AVATAR_SRC_L = "com.leon.zhihucus.user_avatar_src_l";
     public static final String USER_NAME = "com.leon.zhihucus.user_name";
     public static final String SHARED_TODAY_LASTEST_STORIES="com.leon.zhihucus.shared_today_lastest_stories";
+    public static final String START_IMAGE_URL = "com.leon.zhihucus.start_image_url";
 
 
     //local path
